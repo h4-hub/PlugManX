@@ -49,7 +49,6 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -424,13 +423,7 @@ public class PaperPluginManager implements PluginManager {
         if (!(PlugMan.getInstance().getBukkitCommandWrap() instanceof BukkitCommandWrapUseless)) {
             Plugin finalTarget = target;
 
-            if (this.isFolia()) {
-                com.tcoded.folialib.FoliaLib foliaLib = new com.tcoded.folialib.FoliaLib(PlugMan.getInstance());
-
-                foliaLib.getImpl().runLater(() -> {
-                    this.loadCommands(finalTarget);
-                }, 500, TimeUnit.MILLISECONDS);
-            } else Bukkit.getScheduler().runTaskLater(PlugMan.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskLater(PlugMan.getInstance(), () -> {
                 this.loadCommands(finalTarget);
             }, 10L);
 
