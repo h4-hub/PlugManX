@@ -51,6 +51,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -70,7 +74,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.tcoded</groupId>
+            <groupId>com.github.TcodesDev</groupId>
             <artifactId>FoliaLib</artifactId>
             <version>0.2.0</version>
             <scope>compile</scope>
@@ -178,7 +182,7 @@
                                     <include>commons-io</include>
                                     <include>commons-logging</include>
                                     <include>org.apache.httpcomponents</include>
-                                    <include>com.tcoded:FoliaLib</include>
+                                    <include>com.github.TcodesDev:FoliaLib</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
@@ -201,7 +205,7 @@
                                     <include>commons-io</include>
                                     <include>commons-logging</include>
                                     <include>org.apache.httpcomponents</include>
-                                    <include>com.tcoded:FoliaLib</include>
+                                    <include>com.github.TcodesDev:FoliaLib</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
