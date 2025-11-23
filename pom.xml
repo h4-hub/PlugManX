@@ -51,10 +51,6 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -74,13 +70,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.TcodesDev</groupId>
-            <artifactId>FoliaLib</artifactId>
-            <version>0.2.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.15.2-R0.1-SNAPSHOT</version>
@@ -94,8 +83,6 @@
             <version>1.1.1</version>
             <scope>compile</scope>
         </dependency>
-
-
 
         <!-- https://mvnrepository.com/artifact/net.md-5/bungeecord-api -->
         <dependency>
@@ -182,15 +169,8 @@
                                     <include>commons-io</include>
                                     <include>commons-logging</include>
                                     <include>org.apache.httpcomponents</include>
-                                    <include>com.github.TcodesDev:FoliaLib</include>
                                 </includes>
                             </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.tcoded</pattern>
-                                    <shadedPattern>com.rylinaux.lib</shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                     <execution>
@@ -205,15 +185,8 @@
                                     <include>commons-io</include>
                                     <include>commons-logging</include>
                                     <include>org.apache.httpcomponents</include>
-                                    <include>com.github.TcodesDev:FoliaLib</include>
                                 </includes>
                             </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.tcoded</pattern>
-                                    <shadedPattern>com.rylinaux.lib</shadedPattern>
-                                </relocation>
-                            </relocations>
                             <outputFile>target/PlugManX.jar</outputFile>
                         </configuration>
                     </execution>
