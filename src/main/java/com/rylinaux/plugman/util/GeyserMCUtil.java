@@ -87,7 +87,8 @@ public class GeyserMCUtil {
 
         System.out.println("[PlugManX DEBUG] Fetching latest version for project: " + projectName);
 
-        HttpClient client = HttpClients.createMinimal();
+        // Use createDefault() instead of createMinimal() to automatically follow redirects
+        HttpClient client = HttpClients.createDefault();
 
         HttpGet get = new HttpGet(API_BASE_URL + projectName + "/versions/latest");
         get.setHeader("User-Agent", "PlugManX");
