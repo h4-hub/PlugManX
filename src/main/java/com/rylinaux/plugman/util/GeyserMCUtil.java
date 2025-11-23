@@ -85,13 +85,24 @@ public class GeyserMCUtil {
             HttpResponse response = client.execute(get);
             String body = IOUtils.toString(response.getEntity().getContent());
 
+            System.out.println("[PlugManX DEBUG] GeyserMC API Response: " + body);
+
             JSONObject json = (JSONObject) JSONValue.parse(body);
             
             if (json != null && json.containsKey("version")) {
-                return (String) json.get("version");
+                String version = (String) json.get("version");
+                System.out.println("[PlugManX DEBUG] Parsed version: " + version);
+                return version;
+            } else {
+                System.err.println("[PlugManX] Failed to parse GeyserMC API response - missing 'version' key");
+                System.err.println("[PlugManX] JSON object: " + json);
             }
 
         } catch (IOException e) {
+            System.err.println("[PlugManX] IOException while fetching GeyserMC version for " + projectName);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("[PlugManX] Unexpected error while fetching GeyserMC version for " + projectName);
             e.printStackTrace();
         }
 
