@@ -24,12 +24,19 @@ public class UpdateUtil {
     }
 
     /**
-     * Check if the installed plugin version is up-to-date with the Spigot version.
+     * Check if the installed plugin version is up-to-date (checks GeyserMC, Spigot, and CurseForge).
      *
      * @param pluginName the plugin name.
      * @return the reflective UpdateResult.
      */
     public static UpdateResult checkUpToDate(String pluginName) {
+        // Check if it's a GeyserMC plugin first
+        if (pluginName.equalsIgnoreCase("Geyser-Spigot") || 
+            pluginName.equalsIgnoreCase("Geyser") || 
+            pluginName.equalsIgnoreCase("floodgate")) {
+            return GeyserMCUtil.checkUpToDate(pluginName);
+        }
+        
         if (PlugMan.getInstance().getResourceMap().containsKey(pluginName.toLowerCase(Locale.ROOT))) {
             Map.Entry<Long, Boolean> entry = PlugMan.getInstance().getResourceMap().get(pluginName.toLowerCase(Locale.ROOT));
 
