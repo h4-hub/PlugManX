@@ -54,7 +54,8 @@ public class AutoUpdateChecker extends BukkitRunnable {
 
         UpdateResult result = GeyserMCUtil.checkUpToDate(pluginName);
         
-        if (result.getResultType() == UpdateResult.ResultType.OUT_OF_DATE) {
+        // Check if update is available by examining the result type
+        if (result != null && result.getType() == UpdateResult.ResultType.OUT_OF_DATE) {
             String message = pluginName + " has an update available! Current: " + 
                            result.getCurrentVersion() + " | Latest: " + result.getLatestVersion();
             
