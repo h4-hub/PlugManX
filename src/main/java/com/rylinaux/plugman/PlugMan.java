@@ -90,6 +90,11 @@ public class PlugMan extends JavaPlugin {
      * The message manager
      */
     private MessageFormatter messageFormatter = null;
+    
+    /**
+     * The auto-update checker
+     */
+    private AutoUpdateChecker autoUpdateChecker = null;
 
     private static InputStream getResourceStatic(String filename) {
         try {
@@ -321,7 +326,6 @@ public class PlugMan extends JavaPlugin {
             if (!alerted) {
                 this.getLogger().warning("!!! The auto (re/un)load feature can break plugins, use with caution !!!");
                 this.getLogger().warning("If anything breaks, a restart will probably fix it!");
-                alerted = true;
             }
             Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
                 if (!new File("plugins").isDirectory()) return;
@@ -356,13 +360,31 @@ public class PlugMan extends JavaPlugin {
                 }
             }, this.getConfig().getLong("auto-reload.check-every-seconds") * 20, this.getConfig().getLong("auto-reload.check-every-seconds") * 20);
         }
+        
+        // Start automatic update checker
+        if (this.getConfig().getBoolean("auto-update.enabled", true)) {
+            this.autoUpdateChecker = new AutoUpdateChecker(this);
+            this.autoUpdateChecker.start();
+        } else {
+            this.getLogger().info("Auto-update checker is disabled in config.yml");
+        }
     }
 
     @Override
     public void onDisable() {
+        // Cancel auto-update checker if running
+        if (this.autoUpdateChecker != null) {
+            try {
+                this.autoUpdateChecker.cancel();
+            } catch (IllegalStateException ignored) {
+                // Task wasn't scheduled yet
+            }
+        }
+        
         PlugMan.instance = null;
         this.messageFormatter = null;
         this.ignoredPlugins = null;
+        this.autoUpdateChecker = null;
     }
 
     /**
