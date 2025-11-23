@@ -61,15 +61,11 @@ public class GeyserMCUtil {
         if (currentVersion == null)
             return new UpdateResult(UpdateResult.ResultType.NOT_INSTALLED, currentVersion, latestVersion);
 
-        // Strip -SNAPSHOT suffix for comparison
-        String normalizedCurrent = currentVersion.replace("-SNAPSHOT", "").trim();
+        // Strip -SNAPSHOT and build info suffixes for comparison
+        String normalizedCurrent = currentVersion.replaceAll("-SNAPSHOT.*", "").replaceAll(" \\(.*\\)", "").trim();
         String normalizedLatest = latestVersion.trim();
 
-        System.out.println("[PlugManX DEBUG] Comparing versions - Current: " + normalizedCurrent + " vs Latest: " + normalizedLatest);
-
         Boolean isActual = UpdateUtil.isActualVersion(normalizedCurrent, normalizedLatest);
-        
-        System.out.println("[PlugManX DEBUG] Version comparison result: " + isActual);
         
         if (isActual != null && isActual)
             return new UpdateResult(UpdateResult.ResultType.UP_TO_DATE, currentVersion, latestVersion);
@@ -85,57 +81,37 @@ public class GeyserMCUtil {
      */
     public static String getLatestVersion(String projectName) {
 
-        System.out.println("[PlugManX DEBUG] Fetching latest version for project: " + projectName);
-
-        // Use createDefault() instead of createMinimal() to automatically follow redirects
+        // Use createDefault() to automatically follow redirects
         HttpClient client = HttpClients.createDefault();
 
         HttpGet get = new HttpGet(API_BASE_URL + projectName + "/versions/latest");
         get.setHeader("User-Agent", "PlugManX");
 
-        System.out.println("[PlugManX DEBUG] Request URL: " + get.getURI());
-
         try {
 
             HttpResponse response = client.execute(get);
             int statusCode = response.getStatusLine().getStatusCode();
-            
-            System.out.println("[PlugManX DEBUG] HTTP Status Code: " + statusCode);
-            System.out.println("[PlugManX DEBUG] Response Status Line: " + response.getStatusLine());
 
             if (statusCode != 200) {
-                System.err.println("[PlugManX] GeyserMC API returned error status: " + statusCode + " - " + response.getStatusLine().getReasonPhrase());
                 return null;
             }
 
             String body = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 
-            System.out.println("[PlugManX DEBUG] Response body length: " + body.length());
-            System.out.println("[PlugManX DEBUG] GeyserMC API Response: " + body);
-
             if (body == null || body.trim().isEmpty()) {
-                System.err.println("[PlugManX] GeyserMC API returned empty response body");
                 return null;
             }
 
             JSONObject json = (JSONObject) JSONValue.parse(body);
             
             if (json != null && json.containsKey("version")) {
-                String version = (String) json.get("version");
-                System.out.println("[PlugManX DEBUG] Parsed version: " + version);
-                return version;
-            } else {
-                System.err.println("[PlugManX] Failed to parse GeyserMC API response - missing 'version' key");
-                System.err.println("[PlugManX] JSON object: " + json);
-                System.err.println("[PlugManX] Raw body for debugging: " + body);
+                return (String) json.get("version");
             }
 
         } catch (IOException e) {
-            System.err.println("[PlugManX] IOException while fetching GeyserMC version for " + projectName);
-            e.printStackTrace();
+            // Silently fail - API may be unavailable
         } catch (Exception e) {
-            System.err.println("[PlugManX] Unexpected error while fetching GeyserMC version for " + projectName);
-            e.printStackTrace();
+            // Silently fail - unexpected error
         }
 
         return null;
