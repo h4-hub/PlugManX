@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Utilities for dealing with the GeyserMC API.
@@ -96,9 +97,25 @@ public class GeyserMCUtil {
         try {
 
             HttpResponse response = client.execute(get);
-            String body = IOUtils.toString(response.getEntity().getContent());
+            int statusCode = response.getStatusLine().getStatusCode();
+            
+            System.out.println("[PlugManX DEBUG] HTTP Status Code: " + statusCode);
+            System.out.println("[PlugManX DEBUG] Response Status Line: " + response.getStatusLine());
 
+            if (statusCode != 200) {
+                System.err.println("[PlugManX] GeyserMC API returned error status: " + statusCode + " - " + response.getStatusLine().getReasonPhrase());
+                return null;
+            }
+
+            String body = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+
+            System.out.println("[PlugManX DEBUG] Response body length: " + body.length());
             System.out.println("[PlugManX DEBUG] GeyserMC API Response: " + body);
+
+            if (body == null || body.trim().isEmpty()) {
+                System.err.println("[PlugManX] GeyserMC API returned empty response body");
+                return null;
+            }
 
             JSONObject json = (JSONObject) JSONValue.parse(body);
             
@@ -109,6 +126,7 @@ public class GeyserMCUtil {
             } else {
                 System.err.println("[PlugManX] Failed to parse GeyserMC API response - missing 'version' key");
                 System.err.println("[PlugManX] JSON object: " + json);
+                System.err.println("[PlugManX] Raw body for debugging: " + body);
             }
 
         } catch (IOException e) {
