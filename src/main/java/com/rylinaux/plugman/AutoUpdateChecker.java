@@ -29,12 +29,17 @@ public class AutoUpdateChecker extends BukkitRunnable {
 
     @Override
     public void run() {
+        plugman.getLogger().info("[AutoUpdate] Check cycle started");
+        
         if (!config.getBoolean("auto-update.enabled", true)) {
+            plugman.getLogger().info("[AutoUpdate] Disabled in config, skipping");
             return;
         }
 
         updatedPlugins.clear();
         List<String> pluginsToCheck = config.getStringList("auto-update.plugins");
+        
+        plugman.getLogger().info("[AutoUpdate] Checking " + pluginsToCheck.size() + " plugins for updates...");
         
         for (String pluginName : pluginsToCheck) {
             checkAndUpdatePlugin(pluginName);
@@ -44,14 +49,18 @@ public class AutoUpdateChecker extends BukkitRunnable {
         if (!updatedPlugins.isEmpty() && config.getBoolean("auto-update.auto-restart", true)) {
             scheduleRestart();
         }
+        
+        plugman.getLogger().info("[AutoUpdate] Check cycle completed");
     }
 
     private void checkAndUpdatePlugin(String pluginName) {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
         if (plugin == null) {
-            return; // Plugin not installed
+            plugman.getLogger().warning("[AutoUpdate] Plugin " + pluginName + " not found, skipping");
+            return;
         }
 
+        plugman.getLogger().info("[AutoUpdate] Checking " + pluginName + "...");
         UpdateResult result = GeyserMCUtil.checkUpToDate(pluginName);
         
         // Check if update is available by examining the result type
@@ -70,6 +79,10 @@ public class AutoUpdateChecker extends BukkitRunnable {
                     updatedPlugins.add(pluginName);
                 }
             }
+        } else if (result != null && result.getType() == UpdateResult.ResultType.UP_TO_DATE) {
+            plugman.getLogger().info("[AutoUpdate] " + pluginName + " is up to date (" + result.getCurrentVersion() + ")");
+        } else {
+            plugman.getLogger().warning("[AutoUpdate] Could not check " + pluginName + " (API may be down)");
         }
     }
 
@@ -299,10 +312,13 @@ public class AutoUpdateChecker extends BukkitRunnable {
         int intervalMinutes = config.getInt("auto-update.check-interval", 60);
         long intervalTicks = intervalMinutes * 60 * 20L;
         
+        plugman.getLogger().info("Auto-update checker starting...");
+        plugman.getLogger().info("First check in 5 minutes, then every " + intervalMinutes + " minutes");
+        
         // Run first check after 5 minutes, then repeat
         this.runTaskTimerAsynchronously(plugman, 5 * 60 * 20L, intervalTicks);
         
-        plugman.getLogger().info("Auto-update checker started (checking every " + intervalMinutes + " minutes)");
+        plugman.getLogger().info("Auto-update checker scheduled successfully");
         
         List<String> plugins = config.getStringList("auto-update.plugins");
         plugman.getLogger().info("Monitoring plugins: " + String.join(", ", plugins));
