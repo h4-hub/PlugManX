@@ -14,5 +14,31 @@ auto-unload:
 auto-reload:
   enabled: false
   check-every-seconds: 10
+
+# Auto-update settings for GeyserMC plugins
+auto-update:
+  # Enable automatic update checking and installation
+  enabled: true
+  
+  # How often to check for updates (in minutes)
+  check-interval: 60
+  
+  # Automatically download and install updates
+  auto-install: true
+  
+  # Restart server after successful update
+  auto-restart: true
+  
+  # Delay before restart (in seconds) - gives players warning time
+  restart-delay: 60
+  
+  # Plugins to auto-check and update
+  plugins:
+    - Geyser-Spigot
+    - floodgate
+  
+  # Notify admins when updates are found/installed
+  notify-admins: true
+
 # Do not change this value
 version: 2
