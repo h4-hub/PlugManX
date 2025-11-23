@@ -60,7 +60,16 @@ public class GeyserMCUtil {
         if (currentVersion == null)
             return new UpdateResult(UpdateResult.ResultType.NOT_INSTALLED, currentVersion, latestVersion);
 
-        Boolean isActual = UpdateUtil.isActualVersion(currentVersion, latestVersion);
+        // Strip -SNAPSHOT suffix for comparison
+        String normalizedCurrent = currentVersion.replace("-SNAPSHOT", "").trim();
+        String normalizedLatest = latestVersion.trim();
+
+        System.out.println("[PlugManX DEBUG] Comparing versions - Current: " + normalizedCurrent + " vs Latest: " + normalizedLatest);
+
+        Boolean isActual = UpdateUtil.isActualVersion(normalizedCurrent, normalizedLatest);
+        
+        System.out.println("[PlugManX DEBUG] Version comparison result: " + isActual);
+        
         if (isActual != null && isActual)
             return new UpdateResult(UpdateResult.ResultType.UP_TO_DATE, currentVersion, latestVersion);
         else
@@ -75,10 +84,14 @@ public class GeyserMCUtil {
      */
     public static String getLatestVersion(String projectName) {
 
+        System.out.println("[PlugManX DEBUG] Fetching latest version for project: " + projectName);
+
         HttpClient client = HttpClients.createMinimal();
 
         HttpGet get = new HttpGet(API_BASE_URL + projectName + "/versions/latest");
         get.setHeader("User-Agent", "PlugManX");
+
+        System.out.println("[PlugManX DEBUG] Request URL: " + get.getURI());
 
         try {
 
