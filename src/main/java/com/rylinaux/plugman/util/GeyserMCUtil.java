@@ -93,12 +93,14 @@ public class GeyserMCUtil {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode != 200) {
+                PlugMan.getInstance().getLogger().warning("GeyserMC API returned HTTP " + statusCode + " for " + projectName);
                 return null;
             }
 
             String body = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 
             if (body == null || body.trim().isEmpty()) {
+                PlugMan.getInstance().getLogger().warning("GeyserMC API returned empty response for " + projectName);
                 return null;
             }
 
@@ -106,12 +108,14 @@ public class GeyserMCUtil {
             
             if (json != null && json.containsKey("version")) {
                 return (String) json.get("version");
+            } else {
+                PlugMan.getInstance().getLogger().warning("GeyserMC API response missing 'version' field for " + projectName);
             }
 
         } catch (IOException e) {
-            // Silently fail - API may be unavailable
+            PlugMan.getInstance().getLogger().warning("Failed to fetch GeyserMC version for " + projectName + ": " + e.getMessage());
         } catch (Exception e) {
-            // Silently fail - unexpected error
+            PlugMan.getInstance().getLogger().severe("Unexpected error fetching GeyserMC version for " + projectName + ": " + e.getMessage());
         }
 
         return null;
